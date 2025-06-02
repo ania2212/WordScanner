@@ -132,7 +132,7 @@ namespace WordScanner.UI
 
             listViewFileCounts.Items.Clear();
 
-            foreach (var kvp in countsPerFile)
+            foreach (var kvp in countsPerFile.OrderByDescending(kv => kv.Value))
             {
                 var item = new ListViewItem(kvp.Key);    
                 item.SubItems.Add(kvp.Value.ToString()); 
