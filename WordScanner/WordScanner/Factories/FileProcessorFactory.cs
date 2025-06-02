@@ -1,4 +1,6 @@
-﻿using WordScanner.FileProcessors;
+﻿using Microsoft.VisualBasic;
+using WordScanner.Common;
+using WordScanner.FileProcessors;
 using WordScanner.Interfaces;
 
 namespace WordScanner.Factories
@@ -12,10 +14,10 @@ namespace WordScanner.Factories
     {
         public IFileProcessor CreateProcessor(string filePath)
         {
-            if (filePath.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+            if (filePath.EndsWith(Common.Constants.HtmlExtension, StringComparison.OrdinalIgnoreCase))
                 return new HtmlFileProcessor();
 
-            if (filePath.EndsWith(".txt", StringComparison.OrdinalIgnoreCase))
+            if (filePath.EndsWith(Common.Constants.TxtExtension, StringComparison.OrdinalIgnoreCase))
                 return new TxtFileProcessor();
 
             throw new NotSupportedException($"File type of {filePath} is not supported.");

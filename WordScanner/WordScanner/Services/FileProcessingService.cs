@@ -1,4 +1,5 @@
-﻿using WordScanner.Factories;
+﻿using WordScanner.Common;
+using WordScanner.Factories;
 using WordScanner.Helpers;
 using WordScanner.Interfaces;
 using WordScanner.WordAnalysis;
@@ -19,18 +20,25 @@ namespace WordScanner.Services
         public IEnumerable<string> GetFilesToProcess(string folder)
         {
             return Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories)
-                             .Where(f => f.EndsWith(".txt") || f.EndsWith(".html"));
+                             .Where(f => f.EndsWith(Constants.TxtExtension) || f.EndsWith(Constants.HtmlExtension));
         }
 
         public void ProcessFiles(IEnumerable<string> files, HashSet<string> ignoreWords)
         {
             Parallel.ForEach(files, file =>
             {
-                IFileProcessor processor = _fileProcessorFactory.CreateProcessor(file);
+                try
+                {
+                    IFileProcessor processor = _fileProcessorFactory.CreateProcessor(file);
 
-                var content = processor.ReadContent(file);
-                var words = WordExtractor.ExtractWords(content).Where(w => !ignoreWords.Contains(w));
-                _wordStatisticsCollector.AddWords(Path.GetFileName(file), words);
+                    var content = processor.ReadContent(file);
+                    var words = WordExtractor.ExtractWords(content).Where(w => !ignoreWords.Contains(w));
+                    _wordStatisticsCollector.AddWords(Path.GetFullPath(file), words);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Exception: failed to process file '{file}': {ex.Message}");
+                }
             });
         }
     }
